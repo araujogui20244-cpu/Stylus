@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>gud store - publique seus apps</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style>
+:root{--g1:#00e676;--g2:#00b0ff;--bg:#0d1621;--card:#16222f;--card2:#1c2b3d;--tx:#f2f7ff;--tx2:#9fb3c8;--gold:#ffca28;--red:#ff5252}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:'Nunito',system-ui,sans-serif;background:linear-gradient(160deg,#0d1621,#0a1f1c 60%,#0d1621);color:var(--tx);min-height:100vh}
+h1,h2,h3,.baloo{font-family:'Baloo 2',cursive;margin:0}
+#app{max-width:480px;margin:0 auto;min-height:100vh;padding-bottom:90px}
+.screen{padding:16px;animation:fade .25s}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1}}
+.logo{display:flex;align-items:center;gap:10px}
+.logo .mark{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,var(--g1),var(--g2));display:flex;align-items:center;justify-content:center;font-family:'Baloo 2';font-weight:800;font-size:24px;color:#06281c;box-shadow:0 4px 18px rgba(0,230,118,.4)}
+.gcard{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:18px;padding:16px;margin:12px 0;box-shadow:0 6px 20px rgba(0,0,0,.35)}
+.gbtn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border:none;border-radius:16px;font-family:'Baloo 2';font-weight:700;font-size:17px;cursor:pointer;background:linear-gradient(135deg,var(--g1),#00c853);color:#052a18;margin:8px 0;box-shadow:0 4px 14px rgba(0,230,118,.35);transition:transform .08s}
+.gbtn:active{transform:scale(.96)}
+.gbtn.blue{background:linear-gradient(135deg,var(--g2),#2979ff);color:#fff;box-shadow:0 4px 14px rgba(0,176,255,.35)}
+.gbtn.ghost{background:var(--card2);color:var(--tx);box-shadow:none;border:1px solid rgba(255,255,255,.1)}
+.gbtn.red{background:linear-gradient(135deg,#ff5252,#d32f2f);color:#fff;box-shadow:0 4px 14px rgba(255,82,82,.35)}
+.gbtn:disabled{opacity:.5}
+.ginput{width:100%;padding:13px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:#0e1826;color:var(--tx);font-size:15px;margin:6px 0;font-family:'Nunito'}
+.ginput:focus{outline:2px solid var(--g1)}
+textarea.ginput{min-height:90px;resize:vertical}
+label.lbl{font-size:13px;color:var(--tx2);font-weight:700}
+.hero{background:linear-gradient(135deg,#00c853,#00b0ff);border-radius:22px;padding:22px 18px;margin:12px 0;color:#04241a;position:relative;overflow:hidden}
+.hero h2{font-size:26px}
+.hero p{margin:6px 0 0;font-weight:600}
+.appcard{display:flex;gap:12px;align-items:center;background:var(--card);border-radius:16px;padding:12px;margin:10px 0;border:1px solid rgba(255,255,255,.06)}
+.appcard img.appicon{width:58px;height:58px;border-radius:14px;object-fit:cover;background:var(--card2)}
+.appcard .inf{flex:1;min-width:0}
+.appcard .inf b{font-size:16px}
+.appcard .inf small{color:var(--tx2)}
+.verif{background:#0e1826;border-radius:12px;padding:10px 12px;margin:8px 0;font-size:14px;display:flex;align-items:center;gap:10px}
+.verif .st{margin-left:auto;font-weight:800}
+.ok{color:var(--g1)} .no{color:var(--red)} .wait{color:var(--gold)}
+.spin{width:18px;height:18px;border:3px solid rgba(255,255,255,.2);border-top-color:var(--g1);border-radius:50%;animation:sp .7s linear infinite;display:inline-block;vertical-align:-4px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.pbar{height:16px;background:#0e1826;border-radius:99px;overflow:hidden;margin:12px 0}
+.pbar>div{height:100%;width:0;background:linear-gradient(90deg,var(--g1),var(--g2));border-radius:99px;transition:width .2s}
+.bottomnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:rgba(13,22,33,.96);backdrop-filter:blur(8px);display:flex;border-top:1px solid rgba(255,255,255,.08);padding:8px 4px calc(8px + env(safe-area-inset-bottom));z-index:50}
+.tab{flex:1;background:none;border:none;color:var(--tx2);font-size:11px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px;cursor:pointer;font-family:'Nunito'}
+.tab .material-icons{font-size:24px}
+.tab.on{color:var(--g1)}
+.tab.pub .material-icons{font-size:32px;background:linear-gradient(135deg,var(--g1),var(--g2));color:#052a18;border-radius:50%;width:52px;height:52px;display:flex;align-items:center;justify-content:center;margin-top:-18px;box-shadow:0 4px 14px rgba(0,230,118,.5)}
+.topbar{display:flex;align-items:center;gap:10px;padding:14px 16px 4px}
+.topbar .back{background:var(--card2);border:none;color:var(--tx);border-radius:12px;width:40px;height:40px;cursor:pointer}
+.popup{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:100;padding:20px}
+.popup .box{background:var(--card);border-radius:22px;padding:24px;max-width:380px;width:100%;text-align:center;border:1px solid rgba(0,230,118,.3);animation:pop .25s}
+@keyframes pop{from{transform:scale(.85);opacity:0}}
+.steps{display:flex;gap:6px;margin:10px 0}
+.steps div{flex:1;height:6px;border-radius:99px;background:#0e1826}
+.steps div.on{background:var(--g1)}
+.photorow{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.photorow img{width:72px;height:72px;object-fit:cover;border-radius:12px}
+.shapes{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:10px 0}
+.shape{aspect-ratio:1;border-radius:14px;background:var(--card2);display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid transparent}
+.shape.on{border-color:var(--g1)}
+.colors{display:flex;gap:10px;margin:10px 0}
+.color{width:40px;height:40px;border-radius:50%;cursor:pointer;border:3px solid transparent}
+.color.on{border-color:#fff}
+.phone{width:250px;height:440px;background:#0a0f16;border:3px solid #2a3b4f;border-radius:26px;margin:10px auto;position:relative;overflow:hidden}
+.el{position:absolute;cursor:pointer;border:2px solid transparent;word-break:break-word}
+.el.sel{border-color:var(--g1);border-style:dashed}
+.toolgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+.tool{background:var(--card2);border:1px solid rgba(255,255,255,.08);color:var(--tx);border-radius:14px;padding:10px 4px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Nunito'}
+.tool .material-icons{display:block;font-size:22px;color:var(--g1);margin-bottom:2px}
+.moverow{display:flex;gap:6px;justify-content:center;margin:8px 0}
+.move{background:var(--card2);border:none;color:var(--tx);border-radius:10px;width:44px;height:40px;font-size:18px;cursor:pointer}
+.badge{display:inline-block;background:linear-gradient(135deg,var(--gold),#ff9800);color:#3a2500;font-size:11px;font-weight:800;border-radius:99px;padding:3px 10px;margin-left:6px}
+.kv{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:14px}
+.kv b{color:var(--tx)} .kv span{color:var(--tx2)}
+.center{text-align:center} .muted{color:var(--tx2);font-size:13px}
+.big{font-size:52px}
+.toplink{color:var(--g1);font-weight:700;cursor:pointer}
+.tree{font-family:monospace;font-size:13px;background:#0e1826;border-radius:12px;padding:12px}
+.chattop{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;background:#16222f;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.08)}
+.chatavatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--g1),var(--g2));display:flex;align-items:center;justify-content:center;font-family:'Baloo 2';font-weight:800;font-size:20px;color:#052a18;flex-shrink:0}
+.chatmsgs{padding:14px 12px 150px;min-height:60vh}
+.bubble{max-width:82%;padding:10px 13px;border-radius:16px;margin:6px 0;font-size:14px;line-height:1.45;animation:fade .2s;word-break:break-word}
+.bubble.eu{margin-left:auto;background:linear-gradient(135deg,#00c853,#009624);color:#fff;border-bottom-right-radius:4px}
+.bubble.bot{background:#1c2b3d;border-bottom-left-radius:4px}
+.bubble img{max-width:100%;border-radius:10px;display:block}
+.chatstatus{font-size:11px;color:var(--tx2);text-align:right;margin:0 6px 8px}
+.chatact{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:rgba(13,22,33,.97);border-top:1px solid rgba(255,255,255,.08);padding:10px 12px calc(10px + env(safe-area-inset-bottom));z-index:60}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<input type="file" id="fiFoto" accept="image/*" multiple style="display:none">
+<input type="file" id="fiIcon" accept="image/*" style="display:none">
+<input type="file" id="fiApp" accept=".apk,.html,.htm" style="display:none">
+<input type="file" id="fiElImg" accept="image/*" style="display:none">
+<input type="file" id="fiElVid" accept="video/*" style="display:none">
+<input type="file" id="fiUpd" accept=".apk,.html,.htm" style="display:none" onchange="updArquivo(this)">
+<input type="file" id="fiIconUpd" accept="image/*" style="display:none" onchange="updIcone(this)">
+<input type="file" id="fiFotoUpd" accept="image/*" multiple style="display:none" onchange="updFotos(this)">
+<input type="file" id="fiChatIcon" accept="image/*" style="display:none" onchange="chatIcon(this)">
+<input type="file" id="fiChatFotos" accept="image/*" multiple style="display:none" onchange="chatFotos(this)">
+<input type="file" id="fiPasta" webkitdirectory multiple style="display:none" onchange="lerPasta(this)">
+<script>
+// ================= CONFIG =================
+var EMAIL_DONO = ""; // <<<<< COLOQUE SEU E-MAIL AQUI (o dono vira "gud studios")
+var KEY_U='gud_users', KEY_S='gud_session', KEY_A='gud_apps', KEY_D='gud_dl', KEY_O='gud_owner';
+function load(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true;}catch(e){return false;}}
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+// ============ SOM DE CLIQUE SATISFATÓRIO ============
+var AC=null;
+function gudClick(){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();var o=AC.createOscillator(),g=AC.createGain();o.type='sine';o.frequency.setValueAtTime(520,AC.currentTime);o.frequency.exponentialRampToValueAtTime(880,AC.currentTime+.07);g.gain.setValueAtTime(.18,AC.currentTime);g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+.12);o.connect(g);g.connect(AC.destination);o.start();o.stop(AC.currentTime+.13);}catch(e){}}
+document.addEventListener('click',function(e){if(e.target.closest('button,.tab,.shape,.color,.tool,.appcard'))gudClick();});
+// ============ CONTA ============
+function users(){return load(KEY_U,[]);} function saveUsers(u){save(KEY_U,u);}
+function sess(){return localStorage.getItem(KEY_S);} function setSess(e){if(e)localStorage.setItem(KEY_S,e);else localStorage.removeItem(KEY_S);}
+function me(){var e=sess();if(!e)return null;return users().find(function(u){return u.email===e;})||null;}
+function isDono(u){if(!u)return false;var o=load(KEY_O,null);if(EMAIL_DONO&&u.email===EMAIL_DONO)return true;return o&&u.email===o;}
+function apps(){return load(KEY_A,[]);} function saveApps(a){return save(KEY_A,a);}
+// ============ APPS DO SITE (estrutura do usuário) ============
+// Repo:
+//   Fotos/icon.jpg, Fotos/Foto 1.jpg, Fotos/Foto 2.jpg, Fotos/Foto 3.jpg
+//   app/app.apk              <- v0.1 (renomeie seu apk para app.apk)
+//   Atualizações/v2.apk, v3.apk...  <- updates (a loja pega o mais recente)
+var NOME_DO_APP='Stylus Get Right'; // <-- nome do app (mude aqui se quiser)
+var SITE_APPS=[];
+function todosApps(){return SITE_APPS.concat(apps());}
+function arquivoExiste(url){
+  return fetch(url,{method:'HEAD',cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return true;}).catch(function(){return false;});
+}
+function enc(u){return encodeURI(u);}
+var PASTAS_ATUALIZ=['Atualizações','Atualizacoes'];
+function probeUpdates(ups,v){
+  if(v>9)return Promise.resolve();
+  var urls=PASTAS_ATUALIZ.map(function(an){return an+'/v'+v+'.apk';});
+  var t=Promise.resolve(null);
+  urls.forEach(function(u){t=t.then(function(a){return a||arquivoExiste(u).then(function(ok){return ok?u:null;});});});
+  return t.then(function(u){
+    if(!u)return;
+    ups.push({versao:'0.'+v,arquivo:enc(u)});
+    return probeUpdates(ups,v+1);
+  });
+}
+function primeiroQueExiste(urls){
+  var t=Promise.resolve(null);
+  urls.forEach(function(u){
+    t=t.then(function(found){
+      if(found)return found;
+      return arquivoExiste(u).then(function(ok){return ok?u:null;});
+    });
+  });
+  return t;
+}
+// A loja aceita o APK com qualquer um desses nomes (não precisa renomear!)
+var APK_CANDIDATOS=[
+  'app/app.apk',
+  'app/stylus get right_1.apk'
+];
+function carregarAppsSite(){
+  SITE_APPS=[];
+  return primeiroQueExiste(APK_CANDIDATOS).then(function(apkPath){
+    if(!apkPath)return;
+    var ups=[{versao:'0.1',arquivo:enc(apkPath)}];
+    return probeUpdates(ups,2).then(function(){
+      var LS=ups[ups.length-1];
+      SITE_APPS.push({id:'site-app',site:true,nome:NOME_DO_APP,
+        descricao:'Baixe o '+NOME_DO_APP+' na gud store! 💚',
+        empresa:'',dono:'',
+        icon:enc('Fotos/icon.jpg'),
+        fotos:[enc('Fotos/Foto 1.jpg'),enc('Fotos/Foto 2.jpg'),enc('Fotos/Foto 3.jpg')],
+        updates:ups,versao:LS.versao,quando:Date.now()});
+      try{if(typeof TAB!=='undefined'&&TAB==='inicio')telaInicio();}catch(e){}
+    });
+  }).catch(function(){});
+}
+function fazerDownloadApp(L,a){
+  if(L.arquivo){var l=document.createElement('a');l.href=L.arquivo;l.download=(a.nome||'app').replace(/\s+/g,'-')+'.apk';document.body.appendChild(l);l.click();setTimeout(function(){l.remove();},400);}
+  else baixarArquivo(L,a.nome);
+}
+function dls(){return load(KEY_D,{});} function saveDls(d){save(KEY_D,d);}
+function uid(){return 'id'+Date.now().toString(36)+Math.floor(Math.random()*999);}
+// ============ SEED ============
+// loja comeca vazia: voce publica o primeiro app!
+(function(){try{var _a=apps(),_b=_a.filter(function(x){return x.id!=='seed1';});if(_b.length!==_a.length)saveApps(_b);}catch(e){}})();
+// ============ TELAS ============
+var app=$('app');
+function telaLogin(modo){
+  modo=modo||'entrar';
+  app.innerHTML='<div class="screen"><div class="center" style="padding:26px 0 6px"><div class="logo" style="justify-content:center"><div class="mark" style="width:64px;height:64px;font-size:34px">g</div></div><h1 style="font-size:34px;margin-top:8px">gud store</h1><p class="muted">publique seus apps. boa e confiável! 💚</p></div>'
+  +'<div class="gcard"><h2>'+(modo==='entrar'?'Entrar':'Criar conta')+'</h2>'
+  +(modo==='criar'?'<label class="lbl">Seu nome</label><input class="ginput" id="fNome" placeholder="Como quer ser chamado?">':'')
+  +'<label class="lbl">E-mail</label><input class="ginput" id="fEmail" type="email" placeholder="voce@email.com">'
+  +'<label class="lbl">Senha</label><input class="ginput" id="fSenha" type="password" placeholder="••••••">'
+  +(modo==='criar'?'<label class="lbl">Confirmar senha</label><input class="ginput" id="fSenha2" type="password" placeholder="••••••">':'')
+  +'<button class="gbtn" onclick="doAuth(\''+modo+'\')"><span class="material-icons">'+(modo==='entrar'?'login':'person_add')+'</span> '+(modo==='entrar'?'Entrar':'Criar conta')+'</button>'
+  +'<p class="center muted">'+(modo==='entrar'?'Não tem conta? <span class="toplink" onclick="telaLogin(\'criar\')">Criar conta</span>':'Já tem conta? <span class="toplink" onclick="telaLogin(\'entrar\')">Entrar</span>')+'</p>'
+  +'<p class="center muted" style="font-size:11px">🔒 sua conta fica salva de verdade neste aparelho</p></div></div>';
+}
+window.telaLogin=telaLogin;
+window.doAuth=function(modo){
+  var email=($('fEmail').value||'').trim().toLowerCase(), senha=$('fSenha').value||'';
+  if(!email||email.indexOf('@')<0){alert('Digite um e-mail válido!');return;}
+  if(senha.length<4){alert('A senha precisa de 4+ caracteres!');return;}
+  var us=users();
+  if(modo==='criar'){
+    var nome=($('fNome').value||'').trim()||'Jogador';
+    if($('fSenha2').value!==senha){alert('As senhas não conferem!');return;}
+    if(us.find(function(u){return u.email===email;})){alert('Esse e-mail já tem conta! Tente entrar.');return;}
+    var dono=false;
+    if(EMAIL_DONO&&email===EMAIL_DONO)dono=true;
+    else if(!load(KEY_O,null)){save(KEY_O,email);dono=true;}
+    us.push({nome:nome,email:email,senha:btoa(senha),dono:dono,quando:Date.now()});
+    saveUsers(us); setSess(email); boasVindas();
+  }else{
+    var u=us.find(function(x){return x.email===email;});
+    if(!u){alert('Conta não encontrada! Crie uma conta.');return;}
+    if(u.senha!==btoa(senha)){alert('Senha incorreta!');return;}
+    setSess(email); boasVindas();
+  }
+};
+function boasVindas(){
+  var u=me();
+  app.innerHTML='<div class="screen"><div class="gcard center" style="margin-top:40px"><div class="big">🎉</div><h2>Bem-vindo à gud store!</h2><p>A loja que você pode publicar seus apps, <b>boa e confiável!</b></p><p class="muted">Logado como <b>'+esc(u.nome)+'</b>'+(isDono(u)?' <span class="badge">👑 DONO</span>':'')+'</p><button class="gbtn" onclick="go(\'inicio\')">Ok, vamos lá!</button></div></div>';
+}
+// ============ LAYOUT PRINCIPAL ============
+var TAB='inicio';
+function layout(titulo,voltar,corpo){
+  return '<div class="topbar">'+(voltar?'<button class="back" onclick="go(\'inicio\')"><span class="material-icons">arrow_back</span></button>':'')
+  +'<div class="logo"><div class="mark">g</div><h2 style="font-size:22px">gud store</h2></div></div>'
+  +'<div class="screen" style="padding-top:4px">'+corpo+'</div>'
+  +'<nav class="bottomnav">'
+  +tab('inicio','home','Início')+tab('jogos','sports_esports','Jogos')
+  +'<button class="tab pub" onclick="go(\'publicar\')"><span class="material-icons">add</span>Publicar</button>'
+  +tab('comunidade','groups','Comunidade')+tab('config','settings','Config')
+  +'</nav>';
+}
+function tab(id,ico,nome){return '<button class="tab'+(TAB===id?' on':'')+'" onclick="go(\''+id+'\')"><span class="material-icons">'+ico+'</span>'+nome+'</button>';}
+window.go=function(t){TAB=t;
+  if(t==='inicio')telaInicio(); else if(t==='jogos')telaJogos(); else if(t==='comunidade')telaComunidade();
+  else if(t==='publicar')pubEtapa(0); else if(t==='config')telaConfig(); else if(t==='editor')telaEditor();
+};
+function appCard(a,extra){
+  return '<div class="appcard" onclick="verApp(\''+a.id+'\')"><img class="appicon" src="'+a.icon+'" onerror="this.style.display=\'none\'"><div class="inf"><b>'+esc(a.nome)+'</b><br><small>'+esc(a.empresa)+' • v'+esc(a.versao)+'</small></div><span class="material-icons" style="color:var(--tx2)">chevron_right</span></div>';
+}
+// ============ INÍCIO ============
+function telaInicio(){
+  var u=me(), as=todosApps().slice().reverse();
+  var corpo='<div class="hero"><h2>👋 Olá, '+esc(u.nome.split(' ')[0])+'!</h2><p>Publique seus apps e jogos aqui. Boa e confiável! 💚</p></div>'
+  +'<div class="gcard"><h3>🚀 Destaques</h3>'+(as.length?as.slice(0,3).map(appCard).join(''):'<p class="muted">Nenhum app ainda. Seja o primeiro!</p>')+'</div>'
+  +'<button class="gbtn blue" onclick="go(\'editor\')"><span class="material-icons">build</span> Criar app no gud editor</button>'+'<button class="gbtn" onclick="pedirApp()"><span class="material-icons">send</span> Colocar meu app</button>'+'<button class="gbtn blue" onclick="importarPasta()"><span class="material-icons">folder_open</span> Importar pasta do app</button>';
+  app.innerHTML=layout('gud store',false,corpo);
+}
+// ============ JOGOS ============
+function telaJogos(){
+  var as=todosApps().slice().reverse();
+  app.innerHTML=layout('',false,'<div class="gcard"><h2>🎮 Jogos e Apps</h2><p class="muted">Tudo que foi publicado na gud store</p>'+(as.length?as.map(appCard).join(''):'<p class="muted">Ainda não há apps. Publique o primeiro!</p>')+'</div>');
+}
+// ============ COMUNIDADE ============
+function telaComunidade(){
+  var u=me(), meus=apps().filter(function(a){return a.donoEmail===u.email;}).reverse();
+  var corpo='<div class="gcard"><h2>👥 Comunidade</h2><p class="muted">Os jogos que <b>você</b> publicou</p>'
+  +(meus.length?meus.map(appCard).join(''):'<p class="muted">Você ainda não publicou nada.<br>Toque em <b>Publicar</b> e mostre sua criação! ✨</p>')+'</div>';
+  app.innerHTML=layout('',false,corpo);
+}
+// ============ PÁGINA DO APP ============
+function verApp(id){
+  var a=todosApps().find(function(x){return x.id===id;}); if(!a)return;
+  var u=me(), dl=dls()[id], souDono=!!(u&&a.donoEmail===u.email), L=latest(a);
+  var fotos=(a.fotos||[]).map(function(f){return '<img src="'+f+'" style="width:100%;border-radius:14px;margin:6px 0" onerror="this.remove()">';}).join('');
+  var botoes='';
+  if(souDono){
+    botoes+='<button class="gbtn blue" onclick="telaPublicarUpd(\''+a.id+'\')"><span class="material-icons">system_update</span> Publicar atualização</button>';
+  }
+  if(a.site){
+    botoes+='<p class="muted center">📂 App do site — novas versões pelo GitHub</p>';
+  }
+  if(dl&&L.versao!==dl){
+    botoes+='<button class="gbtn" onclick="baixarApp(\''+a.id+'\')"><span class="material-icons">system_update</span> Atualizar para v'+esc(L.versao)+'</button>';
+  }else{
+    botoes+='<button class="gbtn" onclick="baixarApp(\''+a.id+'\')"><span class="material-icons">download</span> Baixar</button>';
+  }
+  var corpo='<div class="gcard center"><img src="'+a.icon+'" style="width:96px;height:96px;border-radius:24px;object-fit:cover" onerror="this.style.display=\'none\'"><h2 style="margin-top:8px">'+esc(a.nome)+'</h2><p class="muted">'+esc(a.empresa)+' • versão '+esc(a.versao)+'</p></div>'
+  +'<div class="gcard"><h3>📝 Sobre</h3><p>'+esc(a.descricao).replace(/\n/g,'<br>')+'</p>'+fotos+'</div>'
+  +((a.updates&&a.updates.length>1)?'<div class="gcard"><h3>📂 Atualizações</h3>'+a.updates.slice().reverse().map(function(up,ix){return '<div class="kv"><b>v'+esc(up.versao)+'</b><span>'+new Date(up.quando).toLocaleDateString('pt-BR')+(ix===0?' • <b class="ok">mais recente</b>':'')+'</span></div>';}).join('')+'</div>':'')
+  +botoes+'<button class="gbtn ghost" onclick="go(\'jogos\')"><span class="material-icons">arrow_back</span> Voltar</button>';
+  app.innerHTML=layout('',true,corpo);
+}
+window.verApp=verApp;
+// ============ IMPORTAR PASTA DO CELULAR (app / Fotos / Atualizacoes) ============
+window.importarPasta=function(){
+  if(!me()){alert('Entre na sua conta primeiro!');return;}
+  $('fiPasta').click();
+};
+window.lerPasta=function(inp){
+  var fs=inp.files;inp.value='';if(!fs.length)return;
+  var apk=null,upd=[],imgs=[];
+  for(var i=0;i<fs.length;i++){
+    var f=fs[i],rp=(f.webkitRelativePath||'').toLowerCase(),nm=f.name.toLowerCase();
+    var emAtualiz=rp.indexOf('atualiza')>=0;
+    if(/\.apk$/i.test(nm)){if(emAtualiz)upd.push(f);else if(!apk)apk=f;else upd.push(f);}
+    else if(/\.(png|jpe?g|webp|gif)$/i.test(nm))imgs.push(f);
+  }
+  if(!apk&&upd.length){upd.sort(function(a,b){return a.name<b.name?-1:1;});apk=upd.shift();}
+  upd.sort(function(a,b){return a.name<b.name?-1:1;});
+  if(!apk&&!upd.length&&!imgs.length){
+    popup('<div class="big">📂</div><h3>Ops!</h3><p>Não encontrei APK nem fotos aqui.<br>Selecione a pasta <b>app</b> (com <b>app</b>, <b>Fotos</b> e <b>Atualizações</b> dentro).</p><button class="gbtn" onclick="fecharPopup()">Entendi</button>');
+    return;
+  }
+  var iconF=null,rest=[];
+  for(var j=0;j<imgs.length;j++){var nn=imgs[j].name.toLowerCase();if(!iconF&&(nn.indexOf('icon')>=0))iconF=imgs[j];else rest.push(imgs[j]);}
+  if(!iconF&&rest.length)iconF=rest.shift();
+  rest=rest.slice(0,3);
+  popup('<div class="big">📂</div><h3>Lendo sua pasta...</h3><div class="pbar"><div id="rdBar" style="width:0%"></div></div><p class="muted" id="rdTxt"></p>');
+  var todos=[];if(apk)todos.push(apk);todos=todos.concat(upd);if(iconF)todos.push(iconF);todos=todos.concat(rest);
+  var dados={apk:null,upd:[],icon:null,fotos:[]},done=0;
+  function fim(){
+    var nomeBase=((apk?apk.name:'meu-app.apk')).replace(/\.apk$/i,'').replace(/[-_]+/g,' ').trim()||'Meu App';
+    PUB={etapa:0,nome:nomeBase,descricao:'Publicado pela pasta do celular 📂',fotos:dados.fotos,icon:dados.icon||'',iconUp:!!dados.icon,empresa:'',fileName:apk?apk.name:'',fileType:'apk',fileData:dados.apk||'',fileSize:apk?apk.size:0,corIcon:'#00e676',formaIcon:'circle',updatesExtras:dados.upd};
+    TAB='publicar';fecharPopup();
+    popup('<div class="big">📂</div><h3>Encontrei na sua pasta:</h3><div style="text-align:left;font-size:14px">'
+      +(apk?'<p>📦 APK: <b>'+esc(apk.name)+'</b> ('+fmtMB(apk.size)+')</p>':'<p class="muted">⚠️ Sem APK na pasta <b>app</b></p>')
+      +(dados.icon?'<p>🎨 Ícone: <b>'+esc(iconF.name)+'</b></p>':'<p class="muted">🎨 Sem ícone (gero um pra você)</p>')
+      +'<p>📸 Fotos: <b>'+dados.fotos.length+'</b></p>'
+      +'<p>🔄 Atualizações: <b>'+dados.upd.length+'</b></p></div>'
+      +'<button class="gbtn" onclick="fecharPopup();PUB.etapa=6;renderPub()">Publicar direto</button>'
+      +'<button class="gbtn ghost" onclick="fecharPopup();PUB.etapa=0;renderPub()">Editar antes</button>');
+  }
+  todos.forEach(function(f){
+    lerArquivo(f,function(d){
+      if(f===apk)dados.apk=d;
+      else if(upd.indexOf(f)>=0)dados.upd.push({f:f,data:d});
+      else if(f===iconF)dados.icon=d;
+      else dados.fotos.push(d);
+      done++;
+      var bar=$('rdBar'),tx=$('rdTxt');
+      if(bar)bar.style.width=(done/todos.length*100)+'%';
+      if(tx)tx.textContent=done+' de '+todos.length+' arquivos';
+      if(done>=todos.length)setTimeout(fim,400);
+    });
+  });
+};
+function latest(a){if(a.updates&&a.updates.length)return a.updates[a.updates.length-1];return {versao:a.versao||'0.1',fileName:a.fileName,fileType:a.fileType||'html',fileData:a.fileData,fileSize:a.fileSize||0,icon:a.icon,fotos:a.fotos||[]};}
+function fmtMB(b){if(!b||b<=0)return '?';var mb=b/1048576;return mb<0.1?Math.max(1,Math.round(b/1024))+' KB':mb.toFixed(1)+' MB';}
+function bytesApp(a){var Le=latest(a);if(Le.fileSize)return Le.fileSize;if(Le.fileData){var bb=(Le.fileData.split(',')[1]||'');return Math.round(bb.length*0.75);}return 0;}
+// ============ PEDIR AUTORIZACAO + CHAT ============
+var CHAT=null, ZAPNUM='557591760272';
+window.pedirApp=function(){
+  popup('<div class="big">📲</div><h3>Colocar meu app</h3><p>Você precisa pedir <b>autorização ao dono</b> para ele colocar seu app no ar!</p><button class="gbtn" onclick="fecharPopup();abrirChat()">Pedir</button><button class="gbtn ghost" onclick="fecharPopup()">Agora não</button>');
+};
+window.abrirChat=function(){
+  CHAT={etapa:0,icon:null,fotos:[],nome:'',desc:''};
+  app.innerHTML='<div class="chattop"><button onclick="CHAT=null;go(\'inicio\')" style="background:#1c2b3d;border:none;color:#fff;border-radius:12px;width:40px;height:40px;cursor:pointer"><span class="material-icons">arrow_back</span></button><div class="chatavatar">g</div><div><b>gud studios</b><br><small class="ok">● online</small></div></div>'
+  +'<div class="chatmsgs" id="chatMsgs"></div><div class="chatact" id="chatAct"></div>';
+  renderChatAct();
+  setTimeout(function(){if(CHAT)chatAdd('bot','Olá! 👋 Eu sou o <b>bot da gud studios</b>!');},700);
+};
+function chatScroll(){var m=$('chatMsgs');if(m)m.scrollTop=m.scrollHeight;}
+function chatAdd(quem,html){
+  if(!CHAT)return;var m=$('chatMsgs');if(!m)return;
+  var d=document.createElement('div');d.className='bubble '+quem;d.innerHTML=html;m.appendChild(d);chatScroll();
+}
+function chatEu(html){
+  if(!CHAT)return;var m=$('chatMsgs');if(!m)return;
+  var d=document.createElement('div');d.className='bubble eu';d.innerHTML=html;m.appendChild(d);
+  var st=document.createElement('div');st.className='chatstatus';st.textContent='Enviando...';m.appendChild(st);chatScroll();
+  setTimeout(function(){st.textContent='Enviado ✓✓';},1400);
+}
+function renderChatAct(){
+  var el=$('chatAct');if(!el||!CHAT)return;var h='';
+  if(CHAT.etapa===0){
+    h='<div style="background:#1c2b3d;border-radius:14px;padding:10px 12px;margin-bottom:8px;font-size:14px">💬 <i>"Olá, gud studio queria publicar um app. Vocês poderiam subir ele?"</i></div><button class="gbtn" onclick="chatEnviarPedido()">Enviar</button>';
+  }else if(CHAT.etapa===1){
+    h='<button class="gbtn" disabled>Aguardando resposta do bot...</button>';
+  }else if(CHAT.etapa===2){
+    h='<button class="gbtn blue" onclick="$(\'fiChatIcon\').click()"><span class="material-icons">image</span> Enviar ícone do app</button>';
+  }else if(CHAT.etapa===3){
+    h='<button class="gbtn blue" onclick="$(\'fiChatFotos\').click()"><span class="material-icons">add_a_photo</span> Enviar fotos do app</button>';
+  }else if(CHAT.etapa===4){
+    h='<label class="lbl">Nome do app</label><input class="ginput" id="chatNome" placeholder="Nome do app"><label class="lbl">Descrição</label><textarea class="ginput" id="chatDesc" rows="2" placeholder="Descrição do app"></textarea><button class="gbtn" onclick="chatEnviarInfo()">Enviar</button>';
+  }else if(CHAT.etapa===5){
+    h='<button class="gbtn" style="background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;box-shadow:0 4px 14px rgba(37,211,102,.35)" onclick="chatAbrirZap()"><span class="material-icons">chat</span> Abrir WhatsApp</button>';
+  }
+  el.innerHTML=h;
+}
+window.chatEnviarPedido=function(){
+  if(!CHAT||CHAT.etapa!==0)return;
+  CHAT.etapa=1;renderChatAct();
+  chatEu('Olá, gud studio queria publicar um app.<br>Vocês poderiam subir ele?');
+  setTimeout(function(){if(!CHAT)return;chatAdd('bot','Olá, essa é a mensagem do bot 🤖<br>Me fale mais do seu app.<br><b>Envie o ícone do app aqui:</b>');CHAT.etapa=2;renderChatAct();},3400);
+};
+window.chatIcon=function(inp){
+  var f=inp.files[0];if(!f||!CHAT)return;
+  lerArquivo(f,function(d){CHAT.icon=d;inp.value='';CHAT.etapa=3;renderChatAct();
+    chatEu('<img src="'+d+'">');
+    setTimeout(function(){if(!CHAT)return;chatAdd('bot','Obrigado por enviar! 🙏<br>Agora envie <b>fotos do app</b>:');},3000);});
+};
+window.chatFotos=function(inp){
+  var fs=inp.files;if(!fs.length||!CHAT)return;
+  var n=0,html='',tot=Math.min(fs.length,3);
+  for(var i=0;i<tot;i++){(function(ff){lerArquivo(ff,function(d){
+    CHAT.fotos.push(d);html+='<img src="'+d+'" style="margin:4px 0">';n++;
+    if(n===tot){inp.value='';CHAT.etapa=4;renderChatAct();chatEu(html);
+      setTimeout(function(){if(!CHAT)return;chatAdd('bot','E o <b>nome</b> e a <b>descrição</b> do app:');},3000);}
+  });})(fs[i]);}
+};
+window.chatEnviarInfo=function(){
+  var n=($('chatNome').value||'').trim(),d=($('chatDesc').value||'').trim();
+  if(!n){alert('Escreva o nome do app!');return;}
+  CHAT.nome=n;CHAT.desc=d;CHAT.etapa=5;renderChatAct();
+  chatEu('<b>📱 Nome:</b> '+esc(n)+'<br><b>📝 Descrição:</b> '+esc(d));
+  setTimeout(function(){if(!CHAT)return;chatAdd('bot','Obrigado por enviar! ✅<br>Para o dono receber tudo, clique aqui:');},3000);
+};
+window.chatAbrirZap=function(){
+  if(!CHAT)return;
+  var txt='Olá, gud studios! Quero publicar um app:%0A📱 Nome: '+encodeURIComponent(CHAT.nome)+'%0A📝 Descrição: '+encodeURIComponent(CHAT.desc||'(sem descrição)')+'%0A🎨 Ícone e 📸 fotos foram enviados no chat da gud store.';
+  window.open('https://wa.me/'+ZAPNUM+'?text='+txt,'_blank');
+};
+function baixarArquivo(e,nome){var l=document.createElement('a');l.href=e.fileData;l.download=e.fileName||(nome+'.'+(e.fileType==='apk'?'apk':'html'));document.body.appendChild(l);l.click();setTimeout(function(){l.remove();},400);}
+window.baixarApp=function(id){
+  var a=apps().find(function(x){return x.id===id;});if(!a)return;
+  var dl=dls(),L=latest(a);
+  if(dl[id]&&dl[id]===L.versao){
+    popup('<div class="big">📲</div><h3>Importante</h3><p>Você já tem o app <b>'+esc(a.nome)+'</b> baixado no seu dispositivo!</p><p class="muted">Espere o dono atualizar o app e atualize quando sair versão nova. 👍</p><button class="gbtn" onclick="fecharPopup()">Entendi</button>');
+    return;
+  }
+  if(!L.fileData&&!L.arquivo){
+    popup('<div class="big">📦</div><h3>Em breve</h3><p>O dono ainda não enviou o arquivo deste app.</p><button class="gbtn" onclick="fecharPopup()">Ok</button>');
+    return;
+  }
+  var ehUpd=!!(dl[id]&&dl[id]!==L.versao);
+  var total=bytesApp(a);
+  popup('<div class="big">⏳</div><h3 id="dlTitulo">'+(ehUpd?'Preparando atualização...':'Preparando...')+'</h3><div class="pbar"><div id="dlBar" style="width:0%"></div></div><p class="muted" id="dlTxt">0 de '+fmtMB(total)+'</p>');
+  setTimeout(function(){
+    var t=$('dlTitulo');if(t)t.textContent='Carregando...';
+    var t0=Date.now(),dur=Math.min(9000,Math.max(1800,total/30000)),iv=setInterval(function(){
+      var pr=Math.min(1,(Date.now()-t0)/dur),bar=$('dlBar'),tx=$('dlTxt');
+      if(bar)bar.style.width=(pr*100)+'%';
+      if(tx)tx.textContent=fmtMB(total*pr)+' de '+fmtMB(total);
+      if(pr>=1){clearInterval(iv);fazerDownloadApp(L,a);var d2=dls();d2[id]=L.versao;saveDls(d2);
+        if(ehUpd){popup('<div class="big">🎉</div><h3>Atualizado!</h3><p>Obrigado por atualizar o app!<br>É sempre bom ficar atualizado! 💚</p><button class="gbtn" onclick="fecharPopup()">Fechar</button>');}
+        else{popup('<div class="big">✅</div><h3>Download concluído!</h3><p><b>'+esc(a.nome)+'</b> v'+esc(L.versao)+' ('+fmtMB(total)+') baixado com sucesso!</p><p class="muted">'+(L.fileType==='apk'?'Abra o arquivo para instalar (permita "fontes desconhecidas").':'Abra o arquivo no navegador para jogar! 🎮')+'</p><button class="gbtn" onclick="fecharPopup()">Fechar</button>');}
+        verApp(id);
+      }
+    },120);
+  },1300);
+};
+// ============ DONO: importar atualizacao (arquivo + icone + fotos) ============
+var UPD=null;
+function bumpV(v){var pp=String(v||'0.1').split('.');return (pp[0]||'0')+'.'+(parseInt(pp[1]||'0',10)+1);}
+window.telaPublicarUpd=function(id){
+  var a=apps().find(function(x){return x.id===id;});if(!a)return;
+  UPD={id:id,etapa:0,fileName:a.fileName,fileData:a.fileData,fileType:a.fileType||'html',fileSize:bytesApp(a),icon:a.icon,fotos:(a.fotos||[]).slice(),corIcon:'#00e676'};
+  renderUpd();
+};
+function updBar(){var h='<div class="steps">';for(var i=0;i<4;i++)h+='<div class="'+(i<=UPD.etapa?'on':'')+'"></div>';return h+'</div>';}
+function renderUpd(){
+  var a=apps().find(function(x){return x.id===UPD.id;});if(!a)return;
+  var corpo='';
+  if(UPD.etapa===0){
+    corpo='<div class="gcard"><h2>📥 Importar atualização</h2><p class="muted"><b>'+esc(a.nome)+'</b> — versão atual: v'+esc(a.versao)+'</p>'+updBar()
+    +'<p class="muted">Escolha o novo arquivo (APK ou HTML):</p>'
+    +(UPD.fileData?'<p class="center">📄 <b>'+esc(UPD.fileName||'arquivo')+'</b> ('+fmtMB(UPD.fileSize)+')</p>':'')
+    +'<button class="gbtn blue" onclick="$(\'fiUpd\').click()"><span class="material-icons">upload_file</span> Escolher arquivo</button>'
+    +'<button class="gbtn" '+(UPD.fileData?'':'disabled')+' onclick="UPD.etapa=1;renderUpd()">Continuar</button>'
+    +'<button class="gbtn ghost" onclick="verApp(\''+a.id+'\')">Cancelar</button></div>';
+  }else if(UPD.etapa===1){
+    corpo='<div class="gcard"><h2>🎨 Ícone <small class="muted">(pode mudar)</small></h2>'+updBar()
+    +'<div class="center"><img src="'+UPD.icon+'" style="width:96px;height:96px;border-radius:24px;object-fit:cover;background:#0e1826"></div>'
+    +'<button class="gbtn blue" onclick="$(\'fiIconUpd\').click()"><span class="material-icons">upload</span> Enviar imagem</button>'
+    +'<p class="center muted">ou forma geométrica grátis:</p><div class="shapes">'
+    +['circle','square','triangle','star','hex','heart','bolt','diamond'].map(function(f){return '<div class="shape" onclick="UPD.icon=iconeForma(\''+f+'\',UPD.corIcon);renderUpd()">'+formaSVG(f,'#fff')+'</div>';}).join('')+'</div>'
+    +'<div class="colors">'+['#00e676','#00b0ff','#ffca28','#ff5252','#ab47bc','#ff9800'].map(function(c){return '<div class="color'+(UPD.corIcon===c?' on':'')+'" style="background:'+c+'" onclick="UPD.corIcon=\''+c+'\';renderUpd()"></div>';}).join('')+'</div>'
+    +'<button class="gbtn" onclick="UPD.etapa=2;renderUpd()">Continuar</button><button class="gbtn ghost" onclick="UPD.etapa=0;renderUpd()">Voltar</button></div>';
+  }else if(UPD.etapa===2){
+    corpo='<div class="gcard"><h2>📸 Fotos <small class="muted">(pode mudar)</small></h2>'+updBar()
+    +'<div class="photorow">'+UPD.fotos.map(function(f){return '<img src="'+f+'">';}).join('')+'</div>'
+    +'<button class="gbtn blue" onclick="$(\'fiFotoUpd\').click()"><span class="material-icons">add_a_photo</span> Adicionar fotos</button>'
+    +'<button class="gbtn ghost" onclick="UPD.fotos=[];renderUpd()">Limpar fotos</button>'
+    +'<button class="gbtn" onclick="UPD.etapa=3;renderUpd();setTimeout(rodarVerifUpd,300)">Verificar e publicar</button>'
+    +'<button class="gbtn ghost" onclick="UPD.etapa=1;renderUpd()">Voltar</button></div>';
+  }else if(UPD.etapa===3){
+    corpo='<div class="gcard"><h2>🔍 Verificando atualização</h2><div id="vbox"></div></div>';
+  }
+  app.innerHTML=layout('',true,corpo);
+}
+function rodarVerifUpd(){
+  var box=$('vbox');if(!box)return;
+  var a=apps().find(function(x){return x.id===UPD.id;});
+  var t=(a.nome+' '+a.descricao+' '+(UPD.fileName||'')).toLowerCase();
+  var mod=MODS.some(function(m){return m.test(t);});
+  var etapas=[
+    {t:'Arquivo válido',ok:!!UPD.fileData},
+    {t:'Verificando se é webview...',ok:true,x:UPD.fileType==='html'?'Sim':'Não'},
+    {t:'Verificando fotos e o app...',ok:!!UPD.icon},
+    {t:'Procurando modificações...',ok:!mod},
+    {t:'Avaliando se pode ser publicado...',ok:!mod}
+  ];
+  var ix=0;
+  box.innerHTML=etapas.map(function(x,n){return '<div class="verif" id="vu'+n+'"><span class="spin"></span> '+x.t+'<span class="st wait">...</span></div>';}).join('');
+  (function prox2(){
+    if(ix>=etapas.length){
+      setTimeout(function(){
+        if(mod){contaRemovida();return;}
+        if(etapas.every(function(x){return x.ok;}))concluirUpd();
+        else popup('<div class="big">⚠️</div><h3>Verificação falhou</h3><p>Alguma etapa não passou. Confira o arquivo e o ícone.</p><button class="gbtn" onclick="fecharPopup()">Ok</button>');
+      },600);
+      return;
+    }
+    var el=$('vu'+ix),et=etapas[ix];
+    setTimeout(function(){
+      var txt=et.x?et.x:(et.ok?'Sim':'Não');
+      el.innerHTML=(et.ok?'<span class="material-icons ok">check_circle</span> ':'<span class="material-icons no">cancel</span> ')+et.t+'<span class="st '+(et.ok?'ok':'no')+'">'+txt+'</span>';
+      ix++;prox2();
+    },900);
+  })();
+}
+function concluirUpd(){
+  var as=apps(),a=as.find(function(x){return x.id===UPD.id;});if(!a)return;
+  var nv=bumpV(a.versao);
+  a.updates=a.updates||[];
+  if(!a.updates.length)a.updates.push({versao:a.versao,fileName:a.fileName,fileType:a.fileType,fileData:a.fileData,fileSize:a.fileSize||0,icon:a.icon,fotos:(a.fotos||[]).slice(),quando:a.quando||Date.now()});
+  a.updates.push({versao:nv,fileName:UPD.fileName,fileType:UPD.fileType,fileData:UPD.fileData,fileSize:UPD.fileSize||0,icon:UPD.icon,fotos:UPD.fotos.slice(),quando:Date.now()});
+  var Lc=a.updates[a.updates.length-1];
+  a.fileName=Lc.fileName;a.fileData=Lc.fileData;a.fileType=Lc.fileType;a.fileSize=Lc.fileSize;
+  a.icon=Lc.icon;a.fotos=Lc.fotos;a.versao=Lc.versao;
+  if(!saveApps(as)){Lc.fileData='';a.fileData='';saveApps(as);}
+  app.innerHTML=layout('',false,'<div class="gcard center" style="margin-top:40px"><div class="big">🎉</div><h2>Atualização publicada!</h2><p><b>'+esc(a.nome)+'</b> agora está na <b>versão '+esc(a.versao)+'</b>!</p><p class="muted">Quem baixou vai ver o botão Atualizar. 🔄</p><button class="gbtn" onclick="verApp(\''+a.id+'\')">Ver app</button><button class="gbtn ghost" onclick="go(\'inicio\')">Início</button></div>');
+}
+window.updArquivo=function(inp){var f=inp.files[0];if(!f||!UPD)return;lerArquivo(f,function(d){UPD.fileName=f.name;UPD.fileType=/\.apk$/i.test(f.name)?'apk':'html';UPD.fileData=d;UPD.fileSize=f.size||0;inp.value='';renderUpd();});};
+window.updIcone=function(inp){var f=inp.files[0];if(!f||!UPD)return;lerArquivo(f,function(d){UPD.icon=d;inp.value='';renderUpd();});};
+window.updFotos=function(inp){var fs=inp.files;if(!fs.length||!UPD)return;var n=0;for(var i=0;i<fs.length;i++){(function(ff){lerArquivo(ff,function(d){UPD.fotos.push(d);if(++n===fs.length){inp.value='';renderUpd();}});})(fs[i]);}};
+// ============ PUBLICAR (wizard) ============
+var PUB=null;
+window.pubEtapa=function(n){
+  if(n===0)PUB={etapa:0,nome:'',descricao:'',fotos:[],icon:'',empresa:'',fileName:'',fileType:'',fileData:'',corIcon:'#00e676',formaIcon:'circle'};
+  PUB.etapa=n; renderPub();
+};
+function pubBarra(total){var h='<div class="steps">';for(var i=0;i<total;i++)h+='<div class="'+(i<=PUB.etapa?'on':'')+'"></div>';return h+'</div>';}
+function renderPub(){
+  var e=PUB.etapa, corpo='';
+  if(e===0){corpo='<div class="gcard"><h2>📤 Publicar app</h2>'+pubBarra(7)+'<label class="lbl">Nome do app</label><input class="ginput" id="pNome" placeholder="Ex: Meu jogo incrível" value="'+esc(PUB.nome)+'"><button class="gbtn" onclick="pubNext(1)">Continuar</button></div>';}
+  else if(e===1){corpo='<div class="gcard"><h2>📝 Descrição</h2>'+pubBarra(7)+'<label class="lbl">Conte sobre seu app</label><textarea class="ginput" id="pDesc" placeholder="O que ele faz? Por que é legal?">'+esc(PUB.descricao)+'</textarea><button class="gbtn" onclick="pubNext(2)">Continuar</button><button class="gbtn ghost" onclick="pubEtapa(0)">Voltar</button></div>';}
+  else if(e===2){corpo='<div class="gcard"><h2>📸 Fotos <small class="muted">(se quiser)</small></h2>'+pubBarra(7)+'<div class="photorow" id="pFotosPrev">'+PUB.fotos.map(function(f){return '<img src="'+f+'">';}).join('')+'</div><button class="gbtn blue" onclick="pubFoto()"><span class="material-icons">add_a_photo</span> Adicionar fotos</button><button class="gbtn" onclick="pubEtapa(3)">Continuar</button><button class="gbtn ghost" onclick="pubEtapa(1)">Voltar</button></div>';}
+  else if(e===3){corpo='<div class="gcard"><h2>🎨 Ícone do app</h2>'+pubBarra(7)+'<div class="center"><img id="pIconPrev" src="'+(PUB.icon||iconeForma(PUB.formaIcon,PUB.corIcon))+'" style="width:96px;height:96px;border-radius:24px;object-fit:cover"></div><button class="gbtn blue" onclick="$(\'fiIcon\').click()"><span class="material-icons">upload</span> Enviar imagem</button><p class="center muted">ou escolha uma forma geométrica grátis:</p><div class="shapes">'+['circle','square','triangle','star','hex','heart','bolt','diamond'].map(function(f){return '<div class="shape'+(PUB.formaIcon===f&&!PUB.iconUp?' on':'')+'" onclick="PUB.formaIcon=\''+f+'\';PUB.icon=\'\';PUB.iconUp=false;renderPub()">'+formaSVG(f,'#fff')+'</div>';}).join('')+'</div><div class="colors">'+['#00e676','#00b0ff','#ffca28','#ff5252','#ab47bc','#ff9800'].map(function(c){return '<div class="color'+(PUB.corIcon===c?' on':'')+'" style="background:'+c+'" onclick="PUB.corIcon=\''+c+'\';renderPub()"></div>';}).join('')+'</div><button class="gbtn" onclick="pubNext(4)">Continuar</button><button class="gbtn ghost" onclick="pubEtapa(2)">Voltar</button></div>';}
+  else if(e===4){var u=me(),dono=isDono(u);var emp=PUB.empresa||(dono?'gud studios':'');
+    corpo='<div class="gcard"><h2>🏢 Nome da empresa</h2>'+pubBarra(7)+(dono?'<p class="muted">👑 Você é o dono! Sua empresa é <b>gud studios</b>.</p>':'')+'<input class="ginput" id="pEmp" placeholder="Nome da empresa" value="'+esc(emp)+'" '+(dono?'readonly':'')+'><button class="gbtn" onclick="pubNext(5)">Continuar</button><button class="gbtn ghost" onclick="pubEtapa(3)">Voltar</button></div>';}
+  else if(e===5){corpo='<div class="gcard"><h2>📁 Arquivo do app</h2>'+pubBarra(7)+'<p class="muted">Aceitamos <b>APK</b> e <b>HTML</b>.</p><div class="gcard" style="background:#0e1826;margin:8px 0"><p style="font-size:13px">⚠️ O HTML ficará disponível para baixar — outras pessoas podem ver e modificar seu arquivo. É recomendado converter para <b>APK</b>!</p></div>'+(PUB.fileName?'<p class="center">📄 <b>'+esc(PUB.fileName)+'</b></p>':'')+'<button class="gbtn blue" onclick="$(\'fiApp\').click()"><span class="material-icons">upload_file</span> Escolher arquivo</button><button class="gbtn" id="btnVerif" '+(PUB.fileName?'':'disabled')+' onclick="pubEtapa(6)">Verificar e publicar</button><button class="gbtn ghost" onclick="pubEtapa(4)">Voltar</button></div>';}
+  else if(e===6){corpo='<div class="gcard"><h2>🔍 Verificando seu arquivo</h2><div id="verifList"></div><button class="gbtn ghost" onclick="pubEtapa(5)">Voltar</button></div>';}
+  app.innerHTML=layout('',false,corpo);
+  if(e===6)rodarVerificacao();
+}
+window.pubNext=function(n){
+  if(PUB.etapa===0){PUB.nome=($('pNome').value||'').trim();if(!PUB.nome){alert('Dê um nome ao app!');return;}}
+  if(PUB.etapa===1){PUB.descricao=($('pDesc').value||'').trim();if(!PUB.descricao){alert('Escreva uma descrição!');return;}}
+  if(PUB.etapa===3){if(!PUB.icon)PUB.icon=iconeForma(PUB.formaIcon,PUB.corIcon);}
+  if(PUB.etapa===4){var u=me();PUB.empresa=isDono(u)?'gud studios':(($('pEmp').value||'').trim()||'Independente');}
+  pubEtapa(n);
+};
+window.pubFoto=function(){$('fiFoto').onchange=function(){var fs=$('fiFoto').files;for(var i=0;i<fs.length&&PUB.fotos.length<5;i++){(function(f){var r=new FileReader();r.onload=function(){PUB.fotos.push(r.result);renderPub();};r.readAsDataURL(f);})(fs[i]);}$('fiFoto').value='';};$('fiFoto').click();};
+$('fiIcon').addEventListener('change',function(){var f=$('fiIcon').files[0];if(!f)return;var r=new FileReader();r.onload=function(){PUB.icon=r.result;PUB.iconUp=true;renderPub();};r.readAsDataURL(f);$('fiIcon').value='';});
+$('fiApp').addEventListener('change',function(){var f=$('fiApp').files[0];if(!f||!PUB)return;lerArquivo(f,function(d){PUB.fileData=d;PUB.fileName=f.name;PUB.fileType=/\.apk$/i.test(f.name)?'apk':'html';renderPub();});$('fiApp').value='';});
+function lerArquivo(f,cb){var r=new FileReader();r.onload=function(){cb(r.result);};r.onerror=function(){alert('Não consegui ler o arquivo!');};r.readAsDataURL(f);}
+// --- formas geométricas do ícone ---
+function formaSVG(f,cor){var s='width="34" height="34" viewBox="0 0 34 34"';
+  if(f==='circle')return '<svg '+s+'><circle cx="17" cy="17" r="13" fill="'+cor+'"/></svg>';
+  if(f==='square')return '<svg '+s+'><rect x="6" y="6" width="22" height="22" rx="5" fill="'+cor+'"/></svg>';
+  if(f==='triangle')return '<svg '+s+'><path d="M17 5 L30 28 L4 28 Z" fill="'+cor+'"/></svg>';
+  if(f==='star')return '<svg '+s+'><path d="M17 3l4 9 10 1-7 7 2 10-9-5-9 5 2-10-7-7 10-1z" fill="'+cor+'"/></svg>';
+  if(f==='hex')return '<svg '+s+'><path d="M17 3l11 7v14l-11 7-11-7V10z" fill="'+cor+'"/></svg>';
+  if(f==='heart')return '<svg '+s+'><path d="M17 29S5 20 5 12c0-4 3-7 7-7 3 0 4 2 5 3 1-1 2-3 5-3 4 0 7 3 7 7 0 8-12 17-12 17z" fill="'+cor+'"/></svg>';
+  if(f==='bolt')return '<svg '+s+'><path d="M19 3L7 19h8l-2 12 12-16h-8z" fill="'+cor+'"/></svg>';
+  return '<svg '+s+'><path d="M17 4l8 13-8 13-8-13z" fill="'+cor+'"/></svg>';}
+function iconeForma(f,cor){return 'data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="24" fill="'+cor+'"/><g transform="translate(20,20) scale(1.76)" fill="#fff">'+formaSVG(f,'#ffffff').replace(/<svg[^>]*>|<\/svg>/g,'')+'</g></svg>');}
+// --- verificação ---
+var MODS=[/\bmod\b/i,/\bhack\b/i,/\bcrack\b/i,/\bcheat\b/i,/\btrainer\b/i,/dinheiro infinito/i,/unlimited money/i,/desbloqueado/i,/premium grátis/i,/premium gratis/i];
+function ehMod(){var t=(PUB.nome+' '+PUB.descricao+' '+PUB.fileName).toLowerCase();return MODS.some(function(m){return m.test(t);});}
+function rodarVerificacao(){
+  var box=$('verifList');if(!box)return;
+  var etapas=[
+    {t:'Arquivo válido',ok:function(){return !!PUB.fileName;}},
+    {t:'Verificando se é web view...',ok:function(){return true;},extra:function(){return PUB.fileType==='html'?'Sim':'Não';}},
+    {t:'Verificando fotos e o app...',ok:function(){return true;}},
+    {t:'Avaliando se pode ser publicado...',ok:function(){return !ehMod();}}
+  ];
+  var i=0;
+  box.innerHTML=etapas.map(function(x){return '<div class="verif" id="vf'+etapas.indexOf(x)+'"><span class="spin"></span> '+x.t+'<span class="st wait">...</span></div>';}).join('');
+  function prox(){
+    if(i>=etapas.length){setTimeout(popupAntiMod,600);return;}
+    var el=$('vf'+i), et=etapas[i];
+    setTimeout(function(){
+      var ok=et.ok();
+      var txt=et.extra?et.extra():(ok?'Sim':'Não');
+      el.innerHTML=(ok?'<span class="material-icons ok">check_circle</span>':'<span class="material-icons no">cancel</span>')+' '+et.t+'<span class="st '+(ok?'ok':'no')+'">'+txt+'</span>';
+      if(!ok&&i===3){setTimeout(contaRemovida,900);return;}
+      if(!ok){setTimeout(function(){alert('Verificação falhou: '+et.t);pubEtapa(5);},900);return;}
+      i++; prox();
+    },900);
+  }
+  prox();
+}
+function popupAntiMod(){
+  popup('<div class="big">⚠️</div><h3>Atenção!</h3><p>Lembre-se: <b>não crie apps modificados</b> com mods. Exemplo: um jogo famoso com mods, ou um app pago que você pegou o APK e publicou grátis. <b>Isso não é permitido!</b></p><button class="gbtn" onclick="euEntendo()">Eu entendo e não vou fazer isso</button>');
+}
+window.euEntendo=function(){fecharPopup();publicandoApp();};
+function publicandoApp(){
+  var tot=PUB.fileData?PUB.fileData.length:50000;
+  var tempo=Math.min(12000,Math.max(2500,tot/400));
+  app.innerHTML=layout('',false,'<div class="gcard center" style="margin-top:40px"><h2>📤 Publicando app...</h2><p class="muted">Aguarde, depende do tamanho do arquivo</p><div class="pbar"><div id="pbFill"></div></div><p id="pbTxt" class="muted">0%</p></div>');
+  var ini=Date.now();
+  var iv=setInterval(function(){
+    var p=Math.min(100,Math.round((Date.now()-ini)/tempo*100));
+    $('pbFill').style.width=p+'%';$('pbTxt').innerText=p+'%';
+    if(p>=100){clearInterval(iv);finalizarPub();}
+  },120);
+}
+function finalizarPub(){
+  var u=me(),as=apps();
+  var novo={id:uid(),nome:PUB.nome,descricao:PUB.descricao,empresa:PUB.empresa,icon:PUB.icon,fotos:PUB.fotos,fileName:PUB.fileName,fileType:PUB.fileType,fileData:PUB.fileData,fileSize:PUB.fileSize||0,versao:'0.1',dono:u.nome,donoEmail:u.email,quando:Date.now()};
+  novo.updates=[{versao:'0.1',fileName:PUB.fileName,fileType:PUB.fileType,fileData:PUB.fileData,fileSize:PUB.fileSize||0,icon:PUB.icon,fotos:PUB.fotos.slice(),quando:Date.now()}];
+  (PUB.updatesExtras||[]).forEach(function(x){
+    var vv=bumpV(novo.updates[novo.updates.length-1].versao);
+    novo.updates.push({versao:vv,fileName:x.f.name,fileType:'apk',fileData:x.data,fileSize:x.f.size||0,icon:novo.icon,fotos:novo.fotos.slice(),quando:Date.now()});
+  });
+  var LFn=novo.updates[novo.updates.length-1];
+  novo.fileName=LFn.fileName;novo.fileData=LFn.fileData;novo.fileType=LFn.fileType;novo.fileSize=LFn.fileSize;novo.versao=LFn.versao;
+  as.push(novo);
+  if(!saveApps(as)){novo.fileData='';as[as.length-1]=novo;saveApps(as);}
+  app.innerHTML=layout('',false,'<div class="gcard center" style="margin-top:40px"><div class="big">🎉</div><h2>Sucesso!</h2><p>Seu app foi <b>publicado com sucesso</b>!<br>Versão <b>0.1</b> — você pode atualizar ele quando quiser.</p><button class="gbtn" onclick="verApp(\''+novo.id+'\')">Ver meu app</button><button class="gbtn ghost" onclick="go(\'inicio\')">Ir ao início</button></div>');
+}
+function contaRemovida(){
+  var u=me(),us=users().filter(function(x){return x.email!==u.email;});
+  saveUsers(us);setSess(null);
+  if(load(KEY_O,null)===u.email)save(KEY_O,null);
+  app.innerHTML='<div class="screen"><div class="gcard center" style="margin-top:60px"><div class="big">🚫</div><h2>Conta removida</h2><p>Sua conta foi <b>removida</b> por enviar um app modificado.</p><p class="muted">Da próxima vez, não faça mais isso!</p><button class="gbtn" onclick="telaLogin(\'entrar\')">Ok</button><button class="gbtn ghost" onclick="telaLogin(\'criar\')">Criar outra conta</button></div></div>';
+}
+// ============ CONFIG ============
+function telaConfig(){
+  var u=me();
+  var corpo='<div class="gcard"><h2>⚙️ Configurações</h2>'
+  +'<h3 style="margin-top:10px">👤 Minha conta</h3><div class="kv"><span>Nome</span><b>'+esc(u.nome)+'</b></div><div class="kv"><span>E-mail</span><b>'+esc(u.email)+'</b></div><div class="kv"><span>Tipo</span><b>'+(isDono(u)?'👑 Dono (gud studios)':'Usuário')+'</b></div>'
+  +'<button class="gbtn ghost" onclick="setSess(null);telaLogin(\'entrar\')"><span class="material-icons">logout</span> Sair da conta</button></div>'
+  +'<div class="gcard"><h3>📜 Regras</h3><p style="font-size:14px">🚫 <b>Não publique apps modificados:</b> mods de jogos de outras empresas, tipo pegar o APK da empresa, colocar mods e publicar falando que é seu. Nem pegar um app pago e publicar grátis.</p><p style="font-size:14px">🙏 <b>Respeite as regras, por favor!</b></p><p style="font-size:14px">⚠️ Sua conta pode ser <b>removida</b> se desrespeitar. Na verificação, o app verifica se é modificado ou não.</p></div>'
+  +'<div class="gcard center"><p class="muted">gud store v0.1<br>feita com 💚</p></div>';
+  app.innerHTML=layout('',false,corpo);
+}
+// ============ GUD EDITOR ============
+var ED=null;
+window.goEditor=function(){ED={nome:'',elementos:[],script:'',sel:null,corIcon:'#00e676',formaIcon:'circle'};telaEditor();};
+function telaEditor(){
+  TAB='editor';
+  var els=ED.elementos.map(function(e){
+    var inner='';
+    if(e.tipo==='texto')inner='<div style="font-size:'+e.size+'px;color:'+e.cor+'">'+esc(e.texto)+'</div>';
+    if(e.tipo==='botao')inner='<button style="background:'+e.cor+';color:#fff;border:none;border-radius:10px;padding:10px 18px;font-size:'+e.size+'px">'+esc(e.texto)+'</button>';
+    if(e.tipo==='imagem')inner='<img src="'+e.src+'" style="width:'+e.w+'px;height:'+e.h+'px;object-fit:cover;border-radius:8px">';
+    if(e.tipo==='video')inner='<video src="'+e.src+'" style="width:'+e.w+'px" controls></video>';
+    if(e.tipo==='input')inner='<input placeholder="'+esc(e.texto)+'" style="padding:10px;border-radius:10px;border:1px solid #888;width:'+e.w+'px;font-size:'+e.size+'px">';
+    return '<div class="el'+(ED.sel===e.id?' sel':'')+'" style="left:'+e.x+'px;top:'+e.y+'px" onclick="selEl(event,\''+e.id+'\')">'+inner+'</div>';
+  }).join('');
+  var sel=ED.elementos.find(function(x){return x.id===ED.sel;});
+  var props='';
+  if(sel){
+    props='<div class="gcard"><h3>✏️ Editando: '+sel.tipo+'</h3>'
+    +((sel.texto!==undefined)?'<label class="lbl">Texto</label><input class="ginput" id="eTexto" value="'+esc(sel.texto)+'">':'')
+    +'<div class="moverow"><button class="move" onclick="moverEl(-10,0)">◀</button><button class="move" onclick="moverEl(0,-10)">▲</button><button class="move" onclick="moverEl(0,10)">▼</button><button class="move" onclick="moverEl(10,0)">▶</button></div>'
+    +'<label class="lbl">Cor</label><input class="ginput" type="color" id="eCor" value="'+(sel.cor||'#00e676')+'">'
+    +'<button class="gbtn blue" onclick="aplicarEl()">Aplicar</button><button class="gbtn red" onclick="delEl()">Excluir</button></div>';
+  }
+  app.innerHTML=layout('',true,
+    '<div class="gcard center"><h2>🛠️ gud editor</h2><p class="muted">Bem-vindo ao gud editor! Crie apps por aqui ou em outros lugares e publique na gud store.</p><label class="lbl">Nome do app</label><input class="ginput" id="edNome" placeholder="Nome do app" value="'+esc(ED.nome)+'"></div>'
+    +'<div class="toolgrid">'
+    +'<button class="tool" onclick="addEl(\'botao\')"><span class="material-icons">smart_button</span>Botão</button>'
+    +'<button class="tool" onclick="addEl(\'texto\')"><span class="material-icons">text_fields</span>Texto</button>'
+    +'<button class="tool" onclick="addEl(\'imagem\')"><span class="material-icons">image</span>Imagem</button>'
+    +'<button class="tool" onclick="addEl(\'video\')"><span class="material-icons">videocam</span>Vídeo</button>'
+    +'<button class="tool" onclick="addEl(\'input\')"><span class="material-icons">input</span>Input</button>'
+    +'<button class="tool" onclick="telaScript()"><span class="material-icons">code</span>Script</button>'
+    +'<button class="tool" onclick="telaIconeEd()"><span class="material-icons">apps</span>Ícone</button>'
+    +'<button class="tool" onclick="telaPasta()"><span class="material-icons">folder</span>Pasta</button>'
+    +'<button class="tool" onclick="telaAjuda()"><span class="material-icons">help</span>Ajuda</button>'
+    +'</div>'
+    +'<div class="phone" id="pv">'+els+'</div>'
+    +'<p class="center muted">Toque num elemento para editar • use as setas para mover</p>'
+    +props
+    +'<button class="gbtn" onclick="editorPublicar()"><span class="material-icons">publish</span> Publicar app</button>'
+    +'<button class="gbtn ghost" onclick="go(\'inicio\')">Voltar</button>');
+}
+window.addEl=function(t){
+  var id=uid();
+  var base={id:id,tipo:t,x:30,y:40+ED.elementos.length*50};
+  if(t==='texto')Object.assign(base,{texto:'Meu texto',size:20,cor:'#ffffff'});
+  if(t==='botao')Object.assign(base,{texto:'Clique aqui',size:16,cor:'#00c853'});
+  if(t==='imagem')Object.assign(base,{w:150,h:100,src:''});
+  if(t==='video')Object.assign(base,{w:200,src:''});
+  if(t==='input')Object.assign(base,{texto:'Digite algo...',size:15,w:180});
+  ED.elementos.push(base);ED.sel=id;
+  if(t==='imagem'){$('fiElImg').onchange=function(){var f=$('fiElImg').files[0];if(!f)return;var r=new FileReader();r.onload=function(){base.src=r.result;telaEditor();};r.readAsDataURL(f);$('fiElImg').value='';};$('fiElImg').click();return;}
+  if(t==='video'){$('fiElVid').onchange=function(){var f=$('fiElVid').files[0];if(!f)return;var r=new FileReader();r.onload=function(){base.src=r.result;telaEditor();};r.readAsDataURL(f);$('fiElVid').value='';};$('fiElVid').click();return;}
+  telaEditor();
+};
+window.selEl=function(ev,id){ev.stopPropagation();ED.nome=$('edNome')?$('edNome').value:ED.nome;ED.sel=id;telaEditor();};
+window.moverEl=function(dx,dy){var s=ED.elementos.find(function(x){return x.id===ED.sel;});if(!s)return;s.x=Math.max(0,s.x+dx);s.y=Math.max(0,s.y+dy);telaEditor();};
+window.aplicarEl=function(){var s=ED.elementos.find(function(x){return x.id===ED.sel;});if(!s)return;if($('eTexto'))s.texto=$('eTexto').value;if($('eCor'))s.cor=$('eCor').value;ED.nome=$('edNome').value;telaEditor();};
+window.delEl=function(){ED.elementos=ED.elementos.filter(function(x){return x.id!==ED.sel;});ED.sel=null;telaEditor();};
+window.telaScript=function(){
+  ED.nome=$('edNome')?$('edNome').value:ED.nome;
+  app.innerHTML=layout('',true,'<div class="gcard"><h2>📜 Script JavaScript</h2><p class="muted">Programe o comportamento do seu app!</p><textarea class="ginput" id="edScript" style="min-height:200px;font-family:monospace" placeholder="alert(\'Olá mundo!\');">'+esc(ED.script)+'</textarea><button class="gbtn" onclick="ED.script=$(\'edScript\').value;ED.nome=$(\'edNome2\')?ED.nome:ED.nome;telaEditor()">Salvar script</button><button class="gbtn ghost" onclick="telaEditor()">Voltar</button></div>');
+};
+window.telaIconeEd=function(){
+  app.innerHTML=layout('',true,'<div class="gcard center"><h2>🎨 Ícone do app</h2><p class="muted">Formas geométricas grátis para uso!</p><img src="'+iconeForma(ED.formaIcon,ED.corIcon)+'" style="width:96px;height:96px;border-radius:24px"><div class="shapes">'+['circle','square','triangle','star','hex','heart','bolt','diamond'].map(function(f){return '<div class="shape'+(ED.formaIcon===f?' on':'')+'" onclick="ED.formaIcon=\''+f+'\';telaIconeEd()">'+formaSVG(f,'#fff')+'</div>';}).join('')+'</div><div class="colors">'+['#00e676','#00b0ff','#ffca28','#ff5252','#ab47bc','#ff9800'].map(function(c){return '<div class="color'+(ED.corIcon===c?' on':'')+'" style="background:'+c+'" onclick="ED.corIcon=\''+c+'\';telaIconeEd()"></div>';}).join('')+'</div><button class="gbtn" onclick="telaEditor()">Pronto!</button></div>');
+};
+window.telaPasta=function(){
+  var nome=(ED.nome||'meu-app').toLowerCase().replace(/\s+/g,'-');
+  app.innerHTML=layout('',true,'<div class="gcard"><h2>📁 Pasta do app</h2><p class="muted">Estrutura do seu projeto:</p><div class="tree">📁 '+esc(nome)+'/<br>├─ 📄 index.html<br>├─ 🎨 icon.svg<br>├─ 📜 script.js<br>└─ 🖼️ assets/ ('+ED.elementos.filter(function(e){return e.tipo==='imagem'||e.tipo==='video';}).length+' arquivos)</div><p class="muted">'+ED.elementos.length+' elementos no app</p><button class="gbtn" onclick="telaEditor()">Voltar</button></div>');
+};
+window.telaAjuda=function(){
+  app.innerHTML=layout('',true,'<div class="gcard"><h2>❓ Ajuda</h2><h3>Como criar um app</h3><p style="font-size:14px">1️⃣ Escolha o que adicionar: <b>botão, texto, imagem, vídeo</b> ou <b>input</b>.<br>2️⃣ Toque no elemento para <b>editar o texto, a cor</b> e <b>mover</b> com as setas.<br>3️⃣ Use o <b>Script</b> para programar em JavaScript: ex. <code>alert("oi!")</code>.<br>4️⃣ Escolha um <b>ícone</b> grátis e veja a <b>pasta</b> do projeto.<br>5️⃣ Toque em <b>Publicar</b> e siga o processo da loja!</p><h3>Não sabe programar? 🤖</h3><p style="font-size:14px">Você pode <b>aprender</b> aos poucos ou <b>usar uma inteligência artificial</b> para te ajudar a escrever os códigos. É só pedir: "crie um botão que mostra uma mensagem"!</p><button class="gbtn" onclick="telaEditor()">Ok, entendi!</button></div>');
+};
+function gerarHTMLApp(){
+  var nome=ED.nome||'Meu App';
+  var corpo=ED.elementos.map(function(e){
+    var st='position:absolute;left:'+e.x+'px;top:'+e.y+'px;';
+    if(e.tipo==='texto')return '<div style="'+st+'font-size:'+e.size+'px;color:'+e.cor+'">'+esc(e.texto)+'</div>';
+    if(e.tipo==='botao')return '<button onclick="acaoBotao()" style="'+st+'background:'+e.cor+';color:#fff;border:none;border-radius:10px;padding:10px 18px;font-size:'+e.size+'px">'+esc(e.texto)+'</button>';
+    if(e.tipo==='imagem'&&e.src)return '<img src="'+e.src+'" style="'+st+'width:'+e.w+'px;height:'+e.h+'px;object-fit:cover;border-radius:8px">';
+    if(e.tipo==='video'&&e.src)return '<video src="'+e.src+'" style="'+st+'width:'+e.w+'px" controls></video>';
+    if(e.tipo==='input')return '<input placeholder="'+esc(e.texto)+'" style="'+st+'padding:10px;border-radius:10px;border:1px solid #888;width:'+e.w+'px;font-size:'+e.size+'px">';
+    return '';
+  }).join('\n');
+  return '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(nome)+'</title></head><body style="margin:0;font-family:sans-serif;position:relative;min-height:100vh;background:#0d1621;color:#fff">\n'+corpo+'\n<script>\nfunction acaoBotao(){alert("Botão clicado!");}\n'+ED.script+'\n<\/script></body></html>';
+}
+window.editorPublicar=function(){
+  ED.nome=($('edNome')&&$('edNome').value)||ED.nome||'Meu App';
+  if(!ED.elementos.length){alert('Adicione pelo menos um elemento ao app!');return;}
+  var h=gerarHTMLApp();
+  PUB={etapa:1,nome:ED.nome,descricao:'',fotos:[],icon:iconeForma(ED.formaIcon,ED.corIcon),iconUp:false,formaIcon:ED.formaIcon,corIcon:ED.corIcon,empresa:'',fileName:ED.nome.replace(/\s+/g,'-')+'.html',fileType:'html',fileData:'data:text/html;charset=utf-8,'+encodeURIComponent(h)};
+  TAB='publicar';renderPub();
+  popup('<div class="big">📦</div><h3>App montado!</h3><p>Seu HTML foi gerado. Complete a descrição e publique!</p><button class="gbtn" onclick="fecharPopup()">Continuar</button>');
+};
+// ============ POPUP ============
+function popup(html){var d=document.createElement('div');d.className='popup';d.id='ppx';d.innerHTML='<div class="box">'+html+'</div>';document.body.appendChild(d);}
+window.fecharPopup=function(){var d=$('ppx');if(d)d.remove();};
+// ============ INÍCIO ============
+if(sess()&&me()){boasVindas();}else{telaLogin('entrar');}
+carregarAppsSite();
+</script>
+</body>
+</html>
